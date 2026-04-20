@@ -74,6 +74,7 @@ export interface FeedbackResult {
   writing_tips: WritingTip[];
   clarity_score: number;
   overall_feedback: string;
+  model_answer: string;
   mermaid_diagram?: string;
 }
 

@@ -51,7 +51,8 @@ export async function POST(req: Request) {
       body.session_id,
       body.content,
       JSON.stringify(feedback),
-      score
+      score,
+      body.exercise_prompt ?? ""
     );
 
     for (const g of feedback.grammar) {
@@ -63,6 +64,7 @@ export async function POST(req: Request) {
         userId,
         v.word,
         v.definition,
+        "",
         v.level,
         v.domain,
         v.search_query

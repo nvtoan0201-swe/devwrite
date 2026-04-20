@@ -1,8 +1,9 @@
 "use client";
 
-import { Sparkles, Send, Loader2 } from "lucide-react";
-import type { Exercise } from "@/lib/types";
+import { Sparkles, Send, Loader2, BookmarkPlus } from "lucide-react";
+import type { Domain, Exercise } from "@/lib/types";
 import { useLang } from "@/lib/i18n";
+import ClickableText from "./ClickableText";
 
 interface WritingEditorProps {
   exercise: Exercise | null;
@@ -14,6 +15,8 @@ interface WritingEditorProps {
   isSubmitting: boolean;
   isGenerating: boolean;
   error: string | null;
+  submittedText: string;
+  domain: Domain;
 }
 
 export default function WritingEditor({
@@ -26,6 +29,8 @@ export default function WritingEditor({
   isSubmitting,
   isGenerating,
   error,
+  submittedText,
+  domain,
 }: WritingEditorProps) {
   const { t } = useLang();
   const wordCount = content.trim() === "" ? 0 : content.trim().split(/\s+/).length;
@@ -69,13 +74,17 @@ export default function WritingEditor({
 
         {exercise ? (
           <>
-            <p className="text-[17px] leading-[1.45] tracking-[0.08px] text-[#181d26]">
-              {exercise.prompt}
-            </p>
+            <ClickableText
+              text={exercise.prompt}
+              domain={domain}
+              className="text-[17px] leading-[1.45] tracking-[0.08px] text-[#181d26]"
+            />
             {exercise.context && (
-              <div className="mt-3 rounded-[12px] border border-[#e0e2e6] bg-[#f8fafc] p-3 text-[14px] leading-[1.5] tracking-[0.08px] text-[rgba(4,14,32,0.82)]">
-                {exercise.context}
-              </div>
+              <ClickableText
+                text={exercise.context}
+                domain={domain}
+                className="mt-3 rounded-[12px] border border-[#e0e2e6] bg-[#f8fafc] p-3 text-[14px] leading-[1.5] tracking-[0.08px] text-[rgba(4,14,32,0.82)]"
+              />
             )}
           </>
         ) : isGenerating ? (
@@ -136,6 +145,25 @@ export default function WritingEditor({
           </button>
         </div>
       </div>
+
+      {submittedText && (
+        <div className="dw-card p-5">
+          <div className="flex items-center gap-2 mb-2">
+            <BookmarkPlus size={14} className="text-[#1b61c9]" aria-hidden />
+            <h2 className="text-[14px] font-medium tracking-[0.08px] text-[#181d26] uppercase">
+              {t("submitted_writing_title")}
+            </h2>
+          </div>
+          <p className="text-[12px] text-[rgba(4,14,32,0.55)] mb-3">
+            {t("submitted_writing_hint")}
+          </p>
+          <ClickableText
+            text={submittedText}
+            domain={domain}
+            className="dw-monospace rounded-[12px] border border-[#e0e2e6] bg-[#f8fafc] p-4 text-[14px] leading-[1.6] text-[#181d26]"
+          />
+        </div>
+      )}
     </section>
   );
 }
