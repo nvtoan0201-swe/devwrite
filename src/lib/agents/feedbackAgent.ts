@@ -78,12 +78,17 @@ const FEEDBACK_SCHEMA: Record<string, unknown> = {
     },
     clarity_score: { type: "number", description: "Clarity score from 1 (unclear) to 10 (crystal clear)." },
     overall_feedback: { type: "string" },
+    model_answer: {
+      type: "string",
+      description:
+        "A polished rewrite of the user's draft in English that would score 10/10. Keep the same intent and length class as the user's writing (short stays short). Fix all grammar and vocabulary issues, tighten structure, use precise technical vocabulary appropriate to the domain and level. 1–3 paragraphs. No prose around it — just the rewritten sample.",
+    },
     mermaid_diagram: {
       type: "string",
       description: "Optional Mermaid diagram source. Include only for system-design when the user described an architecture. Empty string otherwise.",
     },
   },
-  required: ["grammar", "vocabulary", "new_vocab", "writing_tips", "clarity_score", "overall_feedback"],
+  required: ["grammar", "vocabulary", "new_vocab", "writing_tips", "clarity_score", "overall_feedback", "model_answer"],
 };
 
 function systemPrompt(domain: Domain, language: "vi" | "en"): string {
@@ -111,6 +116,7 @@ OUTPUT LANGUAGE — IMPORTANT:
   - grammar[].error, grammar[].correction
   - vocabulary[].original, vocabulary[].suggestion
   - new_vocab[].word, new_vocab[].search_query
+  - model_answer (always English — this is the 10/10 sample the user will study)
 - Mix English technical terms naturally into Vietnamese sentences when needed (e.g. "dùng thì present perfect", "ở đây cần article 'a'").`
       : `
 OUTPUT LANGUAGE:
@@ -127,6 +133,7 @@ Rules:
 - Suggest vocabulary one level above where the user appears to be writing.
 - Tips must be actionable, under 30 words, and applicable to this exact sample.
 - Be encouraging but honest. Developers respect direct feedback.
+- ALWAYS include a \`model_answer\`: a full rewrite in English that would score 10/10. Preserve the user's intent; match their length class (short stays short). Fix all issues and demonstrate what "native senior-engineer prose" looks like for this exercise. This is the single highest-value thing the user gets — take it seriously.
 ${languageBlock}
 
 Respond with ONLY the JSON object. No prose, no code fences.`;
@@ -163,6 +170,7 @@ export async function generateFeedback(
     writing_tips: raw.writing_tips ?? [],
     clarity_score: Math.max(1, Math.min(10, Number(raw.clarity_score) || 5)),
     overall_feedback: raw.overall_feedback ?? "",
+    model_answer: raw.model_answer ?? "",
     mermaid_diagram:
       raw.mermaid_diagram && raw.mermaid_diagram.trim().length > 0
         ? raw.mermaid_diagram
