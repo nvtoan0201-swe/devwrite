@@ -8,6 +8,7 @@ import GrammarPanel from "./GrammarPanel";
 import VocabPanel from "./VocabPanel";
 import WritingTipsPanel from "./WritingTipsPanel";
 import ProgressBar from "./ProgressBar";
+import ClickableText from "./ClickableText";
 
 type TabId = "grammar" | "vocab" | "tips";
 
@@ -33,6 +34,7 @@ interface FeedbackPanelProps {
   dueVocab: DueVocabItem[];
   topErrors: TopError[];
   isSubmitting: boolean;
+  domain: Domain;
 }
 
 export default function FeedbackPanel({
@@ -41,6 +43,7 @@ export default function FeedbackPanel({
   dueVocab,
   topErrors,
   isSubmitting,
+  domain,
 }: FeedbackPanelProps) {
   const { t } = useLang();
   const [active, setActive] = useState<TabId>("grammar");
@@ -65,7 +68,7 @@ export default function FeedbackPanel({
       </div>
 
       {feedback?.model_answer && (
-        <ModelAnswerCard text={feedback.model_answer} />
+        <ModelAnswerCard text={feedback.model_answer} domain={domain} />
       )}
 
       <div className="dw-card flex-1 flex flex-col min-h-0">
@@ -192,7 +195,7 @@ function scoreLabelKey(score: number): I18nKey {
   return "score_rewrite";
 }
 
-function ModelAnswerCard({ text }: { text: string }) {
+function ModelAnswerCard({ text, domain }: { text: string; domain: Domain }) {
   const { t } = useLang();
   const [copied, setCopied] = useState(false);
 
@@ -234,9 +237,12 @@ function ModelAnswerCard({ text }: { text: string }) {
       <p className="text-[11px] text-[rgba(4,14,32,0.55)] tracking-[0.07px] mb-3">
         {t("model_answer_hint")}
       </p>
-      <div className="rounded-[12px] border border-[rgba(27,97,201,0.25)] bg-[rgba(27,97,201,0.04)] p-3 text-[14px] leading-[1.6] text-[#181d26] whitespace-pre-wrap">
-        {text}
-      </div>
+      <ClickableText
+        text={text}
+        domain={domain}
+        tone="model"
+        className="rounded-[12px] border border-[rgba(27,97,201,0.25)] bg-[rgba(27,97,201,0.04)] p-3 text-[14px] leading-[1.6] text-[#181d26]"
+      />
     </div>
   );
 }

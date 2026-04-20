@@ -1,11 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { PenLine, Languages } from "lucide-react";
 import DomainSelector from "@/components/DomainSelector";
 import WritingEditor from "@/components/WritingEditor";
 import FeedbackPanel from "@/components/FeedbackPanel";
 import ChatWidget from "@/components/ChatWidget";
+import Nav from "@/components/Nav";
 import { useLang } from "@/lib/i18n";
 import type {
   Domain,
@@ -58,7 +58,7 @@ interface ExerciseResponse {
 }
 
 export default function Home() {
-  const { lang, toggle, t } = useLang();
+  const { lang } = useLang();
   const [domain, setDomain] = useState<Domain>("backend");
   const [level, setLevel] = useState<Level>("intern");
 
@@ -155,42 +155,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#f8fafc]">
-      <header className="border-b border-[#e0e2e6] bg-white">
-        <div className="max-w-[1440px] mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span
-              className="inline-flex h-8 w-8 items-center justify-center rounded-[10px]"
-              style={{ background: "#1b61c9", color: "white" }}
-              aria-hidden
-            >
-              <PenLine size={18} />
-            </span>
-            <div className="flex flex-col leading-tight">
-              <span className="text-[16px] font-medium tracking-[0.08px] text-[#181d26]">
-                DevWrite
-              </span>
-              <span className="text-[12px] tracking-[0.07px] text-[rgba(4,14,32,0.55)]">
-                {t("header_tagline")}
-              </span>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={toggle}
-              className="inline-flex items-center gap-1.5 rounded-full border border-[#e0e2e6] bg-white px-3 py-1.5 text-[12px] font-medium tracking-[0.08px] text-[#181d26] hover:border-[#1b61c9] hover:text-[#1b61c9] transition-colors"
-              aria-label="Toggle language"
-              title={lang === "vi" ? "Switch to English" : "Chuyển sang Tiếng Việt"}
-            >
-              <Languages size={12} aria-hidden />
-              {lang === "vi" ? "VI" : "EN"}
-            </button>
-            <span className="hidden sm:inline-flex dw-chip">
-              {t("header_chip")}
-            </span>
-          </div>
-        </div>
-      </header>
+      <Nav />
 
       <main className="max-w-[1440px] mx-auto px-6 py-6">
         <div className="flex flex-col lg:flex-row gap-4">
@@ -215,6 +180,8 @@ export default function Home() {
             isSubmitting={isSubmitting}
             isGenerating={isGenerating}
             error={error}
+            submittedText={submittedText}
+            domain={domain}
           />
 
           <FeedbackPanel
@@ -223,6 +190,7 @@ export default function Home() {
             dueVocab={dueVocab}
             topErrors={topErrors}
             isSubmitting={isSubmitting}
+            domain={domain}
           />
         </div>
       </main>
