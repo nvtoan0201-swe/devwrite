@@ -1,37 +1,70 @@
 # DevWrite
 
-An AI writing coach that helps developers practice **technical English** across six domains: backend, frontend, system design, AI/ML, agentic systems, and prompt engineering.
+**Your technical English coach — practice the writing that actually moves your career.**
 
-Powered by [Claude Code](https://claude.com/claude-code) via the Claude Agent SDK — no API key required. The app spawns the local `claude` CLI as a subprocess for every LLM call, so anyone already signed into Claude Code can run it.
+Most English learning apps teach you how to order coffee. DevWrite teaches you how to write a system-design doc, explain a bug to a senior engineer, review a PR in clear prose, or document an API so the next person on-call doesn't page you at 3am.
 
-## Features
+## Who this is for
 
-- **Adaptive exercises.** A planner agent reads your error history and picks the next domain, level, and weak areas to drill.
-- **Structured feedback.** Each submission is graded for grammar, word choice, clarity, structure, and style. Responses are JSON via the SDK's `json_schema` output format.
-- **Spaced-repetition vocabulary.** New technical words are added to your deck after each session and resurface for review.
-- **Bilingual UI (EN / VI).** Toggle the interface language in the header. Grammar explanations, tips, and overall feedback are returned in your chosen language while the learning material (errors, corrections, new vocab) stays in English.
-- **Floating chat widget.** Quick questions in Vietnamese or English without leaving the page.
-- **Mermaid diagrams** for system-design exercises when you describe an architecture.
+Developers whose day-to-day work runs on English but whose first language isn't.
 
-## Stack
+If you've ever:
 
-- Next.js 16 (App Router, Turbopack) · TypeScript strict mode
-- Tailwind CSS 4
-- [@anthropic-ai/claude-agent-sdk](https://github.com/anthropics/claude-agent-sdk) — runs the Claude Code CLI as a subprocess
-- [@libsql/client](https://github.com/tursodatabase/libsql-client-ts) — local SQLite file (`devwrite.db`)
-- lucide-react icons
+- rewritten the same Slack message five times before sending it,
+- shipped a PR description that got "can you clarify?" comments,
+- stared at a blank doc wondering how to explain your architecture in a way that lands,
+- felt your ideas are sharper in your head than they come out on the page,
 
-## Prerequisites
+this is built for you.
 
-1. Node.js 20+
-2. [Claude Code CLI](https://claude.com/claude-code) installed and logged in:
-   ```bash
-   npm install -g @anthropic-ai/claude-code
-   claude login
-   ```
-   Verify with `claude --version`. The app spawns `claude` for every LLM call, so this must work in your shell.
+## The mission
 
-## Getting started
+Give every developer the one thing that actually unlocks technical English: **concrete, personalized, senior-engineer-grade feedback on their own writing, every day.**
+
+Not drills. Not flashcards out of context. Not "which preposition is correct." Real writing, in your real domain, graded on what actually matters at work: clarity, precision, structure.
+
+## What it does for you
+
+### Writes with you, not at you
+You get an exercise suited to your level and domain. You write. You submit. You get back:
+- What you got wrong, in your own words — with the rule named, not just the fix.
+- Word choices a senior engineer would make instead.
+- Three targeted writing tips — clarity, structure, style — specific to this exact sample.
+- A clarity score, so you can see yourself climbing.
+
+### Focused on the domains that actually pay
+- **Backend** — APIs, databases, distributed services
+- **Frontend** — UI frameworks, UX, performance
+- **System design** — architecture, scale, trade-offs
+- **AI / ML** — models, training, inference, evaluation
+- **Agentic systems** — autonomous agents, tools, orchestration
+- **Prompt engineering** — writing for Claude Code, Cursor, and coding agents
+
+Pick where you want to grow. The app picks the exercise.
+
+### Adapts to you
+DevWrite remembers your mistakes and leans into them. Repeat subject–verb errors? You'll see them called out as a pattern. Struggling with articles? The planner will aim your next exercise there. Nail three sessions in a row? You move up a level. No XP grind — just honest, useful progression.
+
+### Remembers vocabulary for you
+Every session adds a small set of domain-specific words to your review deck. DevWrite schedules them back at spaced intervals so they stick — no separate flashcard app, no manual work.
+
+### Speaks your language
+Toggle between **Tiếng Việt** and **English** in the header. Grammar explanations, writing tips, and overall feedback arrive in your chosen language — but the actual errors, corrections, and new vocabulary stay in English, because that's the material you're here to learn.
+
+For learners who find fully-English apps intimidating, this is the difference between "I'll come back later" and "I get it, I can keep going."
+
+### Ask anything, any time
+A floating chat sits in the corner. Stuck on a word? Want a quick second opinion on a sentence? Need someone to explain *idempotent* in Vietnamese one more time? Ask — in either language.
+
+## Why it's different
+
+- **Technical English, not general English.** You will never be asked to describe your favorite holiday.
+- **Real feedback, not rubrics.** Every response is graded by a senior engineer's voice, not a scoring algorithm.
+- **Your language, when you need it.** Explanations in Vietnamese when the concept is new; English when the material is the point.
+- **No API key, no paywall, no subscription.** It runs locally on your machine using Claude Code.
+- **No account.** Your data never leaves your laptop.
+
+## Get started
 
 ```bash
 git clone git@github.com:nvtoan0201-swe/devwrite.git
@@ -40,65 +73,21 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). The SQLite database (`devwrite.db`) and 120 seed vocabulary entries are created on first request.
+Open [http://localhost:3000](http://localhost:3000) and pick a domain.
 
-## Project layout
+You'll need the [Claude Code CLI](https://claude.com/claude-code) installed and logged in — that's what DevWrite uses to run the coach. One-time setup:
 
-```
-src/
-├── app/
-│   ├── api/
-│   │   ├── chat/route.ts         # floating chat widget endpoint
-│   │   ├── exercise/route.ts     # generate exercise + session
-│   │   ├── feedback/route.ts     # grade a submission
-│   │   └── progress/route.ts     # stats, due vocab, top errors
-│   ├── layout.tsx                # wraps app in LangProvider
-│   └── page.tsx                  # 3-column UI
-├── components/
-│   ├── ChatWidget.tsx            # floating "Ask Claude" chat
-│   ├── DomainSelector.tsx        # left rail
-│   ├── WritingEditor.tsx         # center panel
-│   ├── FeedbackPanel.tsx         # right rail with tabs
-│   ├── GrammarPanel.tsx
-│   ├── VocabPanel.tsx
-│   ├── VocabCard.tsx
-│   ├── WritingTipsPanel.tsx
-│   └── ProgressBar.tsx
-└── lib/
-    ├── agents/
-    │   ├── claudeCode.ts         # askClaudeCode (JSON) + chatClaudeCode
-    │   ├── exerciseAgent.ts
-    │   ├── feedbackAgent.ts
-    │   └── plannerAgent.ts       # deterministic, no LLM
-    ├── db.ts                     # libsql client + helpers
-    ├── i18n.tsx                  # VI/EN dictionary + LangProvider
-    ├── seed.ts                   # 120 vocab entries
-    └── types.ts
+```bash
+npm install -g @anthropic-ai/claude-code
+claude login
 ```
 
-## How the AI layer works
+## A closing note
 
-All LLM calls route through `src/lib/agents/claudeCode.ts`:
+Writing in a second language isn't a skill you drill into shape. It's a habit you build, one small piece of feedback at a time. DevWrite is the version of that feedback loop we wished we'd had years ago — before every awkward email, every confusing PR, every meeting where we had the right idea and the wrong words for it.
 
-- `askClaudeCode<T>()` — structured JSON output via `outputFormat: { type: "json_schema", schema }`. Used by the feedback and exercise agents.
-- `chatClaudeCode()` — free-form conversation for the floating chat widget. Takes the last 8 turns for context.
+We hope it helps you get there faster.
 
-The SDK runs with `tools: []` and `permissionMode: "dontAsk"`, so the agents cannot edit files or run shell commands — they only respond to the prompt.
+---
 
-## Scripts
-
-| Command           | Purpose                          |
-| ----------------- | -------------------------------- |
-| `npm run dev`     | Start dev server (Turbopack)     |
-| `npm run build`   | Production build                 |
-| `npm run start`   | Run the production build         |
-| `npm run lint`    | Next.js lint                     |
-| `npx tsc --noEmit`| Type-check without emitting      |
-
-## Data
-
-A local SQLite file `devwrite.db` is created in the project root on first request. Tables cover users, sessions, submissions, vocabulary, error history, and a user-vocab review queue. The file is gitignored.
-
-## License
-
-MIT
+MIT License.
