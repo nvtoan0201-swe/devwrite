@@ -52,3 +52,7 @@ Thumbs.db
 
 # misc
 *.pem
+
+# markdown — only README.md is published; everything else stays local
+*.md
+!README.md
